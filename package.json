@@ -1,0 +1,45 @@
+{
+  "name": "tv-mini-charts",
+  "version": "1.0.1",
+  "description": "Electron app that displays multiple TradingView mini charts.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build:mac": "electron-builder --mac dir --arm64",
+    "build:mac:universal": "electron-builder --mac dir --universal"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "^40.4.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.hirotgr.tvminicharts",
+    "productName": "TV Mini Charts",
+    "copyright": "Copyright © 2026 hirotgr",
+    "asar": true,
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer.js",
+      "index.html",
+      "styles.css",
+      "package.json"
+    ],
+    "mac": {
+      "target": [
+        "dir"
+      ],
+      "category": "public.app-category.finance",
+      "identity": null,
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false
+    }
+  }
+}
