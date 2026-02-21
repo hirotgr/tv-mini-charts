@@ -6,23 +6,19 @@ const TV_WIDGET_TAG_NAME = "tv-mini-chart";
 const TV_WIDGET_SCRIPT_URL =
   "https://widgets.tradingview-widget.com/w/en/tv-mini-chart.js";
 const TV_WIDGET_LOAD_TIMEOUT_MS = 8000;
-const DEFAULT_SYMBOLS = [
-  "FX:USDJPY",
-  "CME_MINI_DL:ES1!",
-  "TVC:GOLD",
-  "TVC:US10Y",
-  "TVC:JP10Y",
-];
+const FALLBACK_SYMBOL = "TVC:GOLD";
 const ALLOWED_THEMES = new Set(["light", "dark"]);
 const ALLOWED_LINE_CHART_TYPES = new Set(["Baseline", "Line", "Area"]);
 
 const fallbackBridge = {
+  getDefaults: async () => ({ defaultSymbols: [] }),
   getConfig: async () => createDefaultConfig(),
   setConfig: async () => ({ ok: true }),
   setAlwaysOnTop: async () => ({ ok: true }),
 };
 
 const bridge = window.appApi || fallbackBridge;
+let defaultSymbols = [];
 
 const elements = {
   chartsContainer: document.getElementById("chartsContainer"),
@@ -65,8 +61,18 @@ function createDefaultConfig() {
   };
 }
 
+function sanitizeDefaultSymbols(value) {
+  const source = Array.isArray(value?.defaultSymbols) ? value.defaultSymbols : [];
+  return source
+    .map((item) => (typeof item === "string" ? item.trim().toUpperCase() : ""))
+    .filter((item) => item.length > 0);
+}
+
 function fallbackSymbol(index) {
-  return DEFAULT_SYMBOLS[index % DEFAULT_SYMBOLS.length];
+  if (defaultSymbols.length === 0) {
+    return FALLBACK_SYMBOL;
+  }
+  return defaultSymbols[index % defaultSymbols.length];
 }
 
 function createDefaultTiles(count) {
@@ -543,6 +549,13 @@ function loadTradingViewWidgetScript() {
 
 async function bootstrap() {
   bindEvents();
+
+  try {
+    defaultSymbols = sanitizeDefaultSymbols(await bridge.getDefaults());
+  } catch (error) {
+    console.error(error);
+    defaultSymbols = [];
+  }
 
   try {
     const loadedConfig = await bridge.getConfig();

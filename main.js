@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, screen } = require("electron");
 const fs = require("node:fs/promises");
 const path = require("node:path");
+const { DEFAULT_SYMBOLS } = require("./shared/defaults");
 
 const HARD_TILE_LIMIT = 12;
 const DEFAULT_TILE_COUNT = 5;
@@ -11,13 +12,6 @@ const WINDOW_STATE_DEBOUNCE_MS = 150;
 const WINDOW_STATE_MAX_DIMENSION = 5000;
 const STARTUP_LOG_FILE = "startup.log";
 const STARTUP_LOG_ENABLED = process.env.TVMC_STARTUP_LOG === "1";
-const DEFAULT_SYMBOLS = [
-  "FX:USDJPY",
-  "CME_MINI_DL:ES1!",
-  "TVC:GOLD",
-  "TVC:US10Y",
-  "TVC:JP10Y",
-];
 const ALLOWED_THEMES = new Set(["light", "dark"]);
 const ALLOWED_LINE_CHART_TYPES = new Set(["Baseline", "Line", "Area"]);
 
@@ -415,6 +409,10 @@ async function createMainWindow(config) {
 }
 
 function registerIpcHandlers() {
+  ipcMain.handle("defaults:get", async () => ({
+    defaultSymbols: [...DEFAULT_SYMBOLS],
+  }));
+
   ipcMain.handle("config:get", async () => clone(currentConfig));
 
   ipcMain.handle("config:set", async (_event, payload) => {

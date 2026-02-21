@@ -1,6 +1,6 @@
 {
   "name": "tv-mini-charts",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Electron app that displays multiple TradingView mini charts.",
   "main": "main.js",
   "scripts": {
@@ -30,6 +30,7 @@
       "renderer.js",
       "index.html",
       "styles.css",
+      "shared/defaults.js",
       "package.json"
     ],
     "mac": {
